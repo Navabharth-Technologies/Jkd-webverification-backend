@@ -1,0 +1,230 @@
+Data:
+[
+  {
+    "RetailerId": "JKDR04",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Retailer"
+  },
+  {
+    "RetailerId": "JKDR04",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR04",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR04",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR04",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR04",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Retailer"
+  },
+  {
+    "RetailerId": "JKDR04",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR04",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR04",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR04",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR04",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Retailer"
+  },
+  {
+    "RetailerId": "JKDR04",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Retailer"
+  },
+  {
+    "RetailerId": "JKDR04",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Retailer"
+  },
+  {
+    "RetailerId": "JKDR04",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Retailer"
+  },
+  {
+    "RetailerId": "JKDR04",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Retailer"
+  },
+  {
+    "RetailerId": "JKDR04",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR09",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Retailer"
+  },
+  {
+    "RetailerId": "JKDR09",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR09",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR09",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR09",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR09",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Retailer"
+  },
+  {
+    "RetailerId": "JKDR09",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR09",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR09",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR09",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  },
+  {
+    "RetailerId": "JKDR09",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Retailer"
+  },
+  {
+    "RetailerId": "JKDR09",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Retailer"
+  },
+  {
+    "RetailerId": "JKDR09",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Retailer"
+  },
+  {
+    "RetailerId": "JKDR09",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Retailer"
+  },
+  {
+    "RetailerId": "JKDR09",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Retailer"
+  },
+  {
+    "RetailerId": "JKDR09",
+    "ShopName": "Vanish enterprises ",
+    "UserId": "JKDOB01",
+    "UserName": "Aishwarya",
+    "RegType": "Vendor"
+  }
+]
+
+Columns:
+UserId, ShopName, RetailerName, EmailAddress, WhatsAppNumber, Location, Pincode, AddressLine1, AddressLine2, State, District, Town, LiveLocationLatitude, LiveLocationLongitude, AadharCardNumber, PANCardNumber, GSTNumber, DeclarationConfirmed, CreatedAt, UpdatedAt, RetailerId

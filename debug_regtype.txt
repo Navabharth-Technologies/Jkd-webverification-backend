@@ -1,0 +1,98 @@
+[
+  {
+    "RegistrationId": 1,
+    "UserId": "JKDOB01",
+    "BusinessType": "Retailer",
+    "CreatedAt": "2026-02-11T15:04:35.157Z"
+  },
+  {
+    "RegistrationId": 2,
+    "UserId": "JKDOB01",
+    "BusinessType": "Vendor",
+    "CreatedAt": "2026-02-11T15:12:10.177Z"
+  },
+  {
+    "RegistrationId": 3,
+    "UserId": "JKDOB01",
+    "BusinessType": "Vendor",
+    "CreatedAt": "2026-02-11T15:50:03.953Z"
+  },
+  {
+    "RegistrationId": 4,
+    "UserId": "JKDOB01",
+    "BusinessType": "Vendor",
+    "CreatedAt": "2026-02-11T16:11:00.377Z"
+  },
+  {
+    "RegistrationId": 5,
+    "UserId": "JKDOB01",
+    "BusinessType": "Vendor",
+    "CreatedAt": "2026-02-11T16:11:55.660Z"
+  },
+  {
+    "RegistrationId": 6,
+    "UserId": "JKDOB01",
+    "BusinessType": "Retailer",
+    "CreatedAt": "2026-02-11T16:20:22.003Z"
+  },
+  {
+    "RegistrationId": 7,
+    "UserId": "JKDOB01",
+    "BusinessType": "Vendor",
+    "CreatedAt": "2026-02-11T16:30:52.640Z"
+  },
+  {
+    "RegistrationId": 8,
+    "UserId": "JKDOB01",
+    "BusinessType": "Vendor",
+    "CreatedAt": "2026-02-11T16:33:05.447Z"
+  },
+  {
+    "RegistrationId": 9,
+    "UserId": "JKDOB01",
+    "BusinessType": "Vendor",
+    "CreatedAt": "2026-02-11T16:37:46.323Z"
+  },
+  {
+    "RegistrationId": 10,
+    "UserId": "JKDOB01",
+    "BusinessType": "Vendor",
+    "CreatedAt": "2026-02-11T16:50:02.647Z"
+  },
+  {
+    "RegistrationId": 11,
+    "UserId": "JKDOB01",
+    "BusinessType": "Retailer",
+    "CreatedAt": "2026-02-11T17:06:26.800Z"
+  },
+  {
+    "RegistrationId": 12,
+    "UserId": "JKDOB01",
+    "BusinessType": "Retailer",
+    "CreatedAt": "2026-02-11T17:17:14.323Z"
+  },
+  {
+    "RegistrationId": 13,
+    "UserId": "JKDOB01",
+    "BusinessType": "Retailer",
+    "CreatedAt": "2026-02-11T17:31:42.690Z"
+  },
+  {
+    "RegistrationId": 14,
+    "UserId": "JKDOB01",
+    "BusinessType": "Retailer",
+    "CreatedAt": "2026-02-11T17:58:40.207Z"
+  },
+  {
+    "RegistrationId": 15,
+    "UserId": "JKDOB01",
+    "BusinessType": "Retailer",
+    "CreatedAt": "2026-02-13T10:18:45.267Z"
+  },
+  {
+    "RegistrationId": 16,
+    "UserId": "JKDOB01",
+    "BusinessType": "Vendor",
+    "CreatedAt": "2026-02-13T10:21:35.687Z"
+  }
+]

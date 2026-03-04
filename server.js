@@ -108,6 +108,10 @@ const startServer = async () => {
             server.close(() => process.exit(0));
         });
 
+       app.get('/health', (req, res) => {
+          res.status(200).send("OK");
+       });
+
 
         /* -----------------------------
            GLOBAL ERROR HANDLER

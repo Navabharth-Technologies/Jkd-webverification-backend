@@ -31,14 +31,12 @@ app.use('/api/vendors', vendorRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin/users', adminUserRoutes);
 
-const PORT = process.env.PORT || 5000;
+const app = express();
+const PORT = process.env.PORT;
 
 const startServer = async () => {
     try {
         await connectDB();
-        const server = app.listen(PORT, () => {
-            console.log(`[SERVER] Started and listening on port ${PORT}`);
-        });
 
         // Prevention for unexpected exits
         process.on('SIGINT', () => {
@@ -62,3 +60,6 @@ const startServer = async () => {
 };
 
 startServer();
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});

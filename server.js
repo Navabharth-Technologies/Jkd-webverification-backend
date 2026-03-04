@@ -29,14 +29,12 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-
 /* -----------------------------
-   BODY PARSER (FOR LARGE FILES)
+   BODY PARSER
 ----------------------------- */
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-
 
 /* -----------------------------
    ROUTES
@@ -48,7 +46,6 @@ app.use('/api/vendors', vendorRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin/users', adminUserRoutes);
 
-
 /* -----------------------------
    ROOT ROUTE
 ----------------------------- */
@@ -57,18 +54,16 @@ app.get('/', (req, res) => {
     res.send('Server running');
 });
 
-
 /* -----------------------------
-   HEALTH CHECK (IMPORTANT FOR AWS)
+   HEALTH CHECK (FOR AWS EB)
 ----------------------------- */
 
 app.get('/health', (req, res) => {
     res.status(200).json({
-        status: 'ok',
-        message: 'Server is healthy'
+        status: "ok",
+        message: "Server is healthy"
     });
 });
-
 
 /* -----------------------------
    SERVER PORT
@@ -76,23 +71,19 @@ app.get('/health', (req, res) => {
 
 const PORT = process.env.PORT || 8080;
 
-
 /* -----------------------------
    START SERVER
 ----------------------------- */
 
 const startServer = async () => {
-
     try {
 
-        // Connect Database
         await connectDB();
         console.log("Connected to SQL Server");
 
         const server = app.listen(PORT, '0.0.0.0', () => {
             console.log(`Server running on port ${PORT}`);
         });
-
 
         /* -----------------------------
            GRACEFUL SHUTDOWN
@@ -108,13 +99,8 @@ const startServer = async () => {
             server.close(() => process.exit(0));
         });
 
-       app.get('/health', (req, res) => {
-          res.status(200).send("OK");
-       });
-
-
         /* -----------------------------
-           GLOBAL ERROR HANDLER
+           GLOBAL ERROR HANDLING
         ----------------------------- */
 
         process.on('uncaughtException', (err) => {
@@ -131,7 +117,6 @@ const startServer = async () => {
         process.exit(1);
 
     }
-
 };
 
 startServer();

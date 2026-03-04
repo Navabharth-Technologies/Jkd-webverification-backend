@@ -26,3 +26,5 @@ jobs:
           environment_name: Webverifucation-env
           version_label: github-${{ github.sha }}
           deployment_package: deploy.zip
+          wait_for_deployment: false
+          

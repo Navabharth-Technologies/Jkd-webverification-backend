@@ -76,14 +76,18 @@ const PORT = process.env.PORT || 8080;
 ----------------------------- */
 
 const startServer = async () => {
-    try {
+  try {
+    await connectDB();
+    console.log("Connected to SQL Server");
+  } catch (err) {
+    console.error("DB connection failed:", err.message);
+    // Don't exit — let server still start so EB health checks pass
+  }
 
-        await connectDB();
-        console.log("Connected to SQL Server");
-
-        const server = app.listen(PORT, '0.0.0.0', () => {
-            console.log(`Server running on port ${PORT}`);
-        });
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+};
 
         /* -----------------------------
            GRACEFUL SHUTDOWN

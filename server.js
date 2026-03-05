@@ -32,16 +32,19 @@ app.get('/health', (req, res) => res.status(200).json({ status: "ok" }));
 const PORT = process.env.PORT || 8080;
 
 const startServer = async () => {
+    // Start listening immediately so EB Health Check passes
+    const server = app.listen(PORT, '0.0.0.0', () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+
+    // Handle DB connection asynchronously
     try {
         await connectDB();
         console.log("Connected to SQL Server");
     } catch (err) {
-        console.error("DB connection failed, starting anyway:", err.message);
+        console.error("DB connection failed:", err.message);
+        console.log("Server will continue to run, but DB features will fail.");
     }
-
-    const server = app.listen(PORT, '0.0.0.0', () => {
-        console.log(`Server running on port ${PORT}`);
-    });
 
     process.on('SIGINT', () => server.close(() => process.exit(0)));
     process.on('SIGTERM', () => server.close(() => process.exit(0)));

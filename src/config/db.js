@@ -22,20 +22,17 @@ const config = {
     }
 };
 
-// const connectDB = async () => {
-//     try {
-//         await sql.connect(config);
-//         console.log('SQL Server Connected Configured');
-//     } catch (err) {
-//         console.error('Database connection failed (Check .env configuration):', err.message);
-//         // Do not exit, allow retry logic to handle reconnection or fail gracefully
-//         throw err;
-//     }
-// };
-
 const connectDB = async () => {
-    console.log('Skipping DB connection for test');
-    // await sql.connect(config);  // ← comment this out temporarily
+     try {
+         await sql.connect(config);
+        console.log('SQL Server Connected Configured');
+    } catch (err) {
+        console.error('Database connection failed (Check .env configuration):', err.message);
+        // Do not exit, allow retry logic to handle reconnection or fail gracefully
+        throw err;
+    }
 };
+
+
 
 module.exports = { connectDB, sql };

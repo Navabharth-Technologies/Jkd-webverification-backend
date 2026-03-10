@@ -102,13 +102,34 @@ exports.getDashboardStats = async (req, res) => {
         // Re-calculate inputs for Vendor query if needed (request can be reused usually)
         const vendorResult = await request.query(vendorQuery);
 
+        // Query for Products
+        const productDateFilter = getDateFilter(period, startDate, endDate, 'P.CreatedAt');
+        let productWhereClauses = [];
+        if (productDateFilter !== '1=1') {
+            productWhereClauses.push(productDateFilter);
+        }
+        const productWhereString = productWhereClauses.length > 0 ? "WHERE " + productWhereClauses.join(" AND ") : "";
+
+        const productQuery = `
+            SELECT 
+                SUM(CASE WHEN Status = 'Approved' THEN 1 ELSE 0 END) as Approved,
+                SUM(CASE WHEN Status = 'Pending' OR Status IS NULL THEN 1 ELSE 0 END) as Pending,
+                SUM(CASE WHEN Status = 'Rejected' THEN 1 ELSE 0 END) as Rejected,
+                COUNT(*) as Total
+            FROM Products P
+            ${productWhereString}
+        `;
+        const productResult = await request.query(productQuery);
+
         res.json({
             success: true,
             data: {
                 retailers: retailerResult.recordset[0] || { Approved: 0, Pending: 0, Rejected: 0, New: 0 },
-                vendors: vendorResult.recordset[0] || { Approved: 0, Pending: 0, Rejected: 0, New: 0 }
+                vendors: vendorResult.recordset[0] || { Approved: 0, Pending: 0, Rejected: 0, New: 0 },
+                products: productResult.recordset[0] || { Approved: 0, Pending: 0, Rejected: 0, Total: 0 }
             }
         });
+
 
     } catch (err) {
         console.error('Error fetching dashboard stats:', err);

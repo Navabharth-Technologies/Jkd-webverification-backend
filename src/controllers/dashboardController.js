@@ -182,6 +182,7 @@ exports.getDashboardDetails = async (req, res) => {
         }
 
         const whereString = whereClauses.length > 0 ? "WHERE " + whereClauses.join(" AND ") : "";
+        let query;
 
         if (type === 'retailer') {
             query = `

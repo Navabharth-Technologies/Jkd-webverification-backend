@@ -90,7 +90,7 @@ exports.getAllRetailers = async (req, res) => {
 
         // 5. Retailer Application Filter (UserId exists in RegistrationType as Retailer OR UserId is NULL)
         if (isApplication === 'true' || isApplication === true) {
-            whereClauses.push("(R.UserId IN (SELECT UserId FROM RegistrationType WHERE BusinessType = 'Retailer') OR R.UserId IS NULL)");
+            whereClauses.push("(R.UserId IN (SELECT UserId FROM [onboarding].RegistrationType WHERE BusinessType = 'Retailer') OR R.UserId IS NULL)");
         } else if (staffId) {
             // 4. Staff Filter (Only if NOT looking for Applications, to avoid conflict if logic overlaps)
             whereClauses.push("R.UserId = @staffId");
@@ -108,7 +108,7 @@ exports.getAllRetailers = async (req, res) => {
                 SELECT 
                     RetailerId, Status, Remark, UpdatedAt,
                     ROW_NUMBER() OVER (PARTITION BY RetailerId ORDER BY UpdatedAt DESC) as rn
-                FROM RetailerStatusTracking WITH (NOLOCK)
+                FROM [onboarding].RetailerStatusTracking WITH (NOLOCK)
             )
             SELECT 
                 R.RetailerId, 
@@ -123,7 +123,7 @@ exports.getAllRetailers = async (req, res) => {
                 RST.Status,
                 R.CreatedAt as OnboardingDate,
                 COUNT(*) OVER() as TotalCount
-            FROM Retailers R WITH (NOLOCK)
+            FROM [onboarding].Retailers R WITH (NOLOCK)
             LEFT JOIN LatestStatus RST ON R.RetailerId = RST.RetailerId AND RST.rn = 1
             ${whereString}
             ORDER BY RST.UpdatedAt DESC 
@@ -169,10 +169,10 @@ exports.getRetailerById = async (req, res) => {
                 RST.Status as DbStatus,
                 RST.Remark as DbRemark,
                 R.CreatedAt as OnboardingDate
-            FROM Retailers R WITH (NOLOCK)
-            LEFT JOIN Users U WITH (NOLOCK) ON R.UserId = U.UserId
-            LEFT JOIN RegistrationType RT WITH (NOLOCK) ON R.UserId = RT.UserId
-            LEFT JOIN RetailerStatusTracking RST WITH (NOLOCK) ON R.RetailerId = RST.RetailerId
+            FROM [onboarding].Retailers R WITH (NOLOCK)
+            LEFT JOIN [onboarding].Users U WITH (NOLOCK) ON R.UserId = U.UserId
+            LEFT JOIN [onboarding].RegistrationType RT WITH (NOLOCK) ON R.UserId = RT.UserId
+            LEFT JOIN [onboarding].RetailerStatusTracking RST WITH (NOLOCK) ON R.RetailerId = RST.RetailerId
             WHERE R.RetailerId = @id
         `);
 
@@ -214,21 +214,21 @@ exports.getRetailerById = async (req, res) => {
         // 2. Get Photos Metadata (IDs only to keep payload light)
         const photosResult = await request.query(`
             SELECT PhotoId, PhotoType, UploadedAt 
-            FROM RetailerShopPhotos 
+            FROM [onboarding].RetailerShopPhotos 
             WHERE RetailerId = @id
         `);
 
         // 3. Get Documents Metadata
         const docsResult = await request.query(`
             SELECT DocumentId, DocumentType, UploadedAt 
-            FROM RetailerDocuments 
+            FROM [onboarding].RetailerDocuments 
             WHERE RetailerId = @id
         `);
 
         // 4. Get Status History
         const historyResult = await request.query(`
             SELECT Status, Remark, UpdatedAt 
-            FROM RetailerStatusTracking 
+            FROM [onboarding].RetailerStatusTracking 
             WHERE RetailerId = @id 
             ORDER BY UpdatedAt DESC
         `);
@@ -256,7 +256,7 @@ exports.getRetailerPhoto = async (req, res) => {
         const request = new sql.Request();
         request.input('id', sql.VarChar, id);
 
-        const result = await request.query(`SELECT ShopPhoto FROM RetailerShopPhotos WHERE PhotoId = @id`);
+        const result = await request.query(`SELECT ShopPhoto FROM [onboarding].RetailerShopPhotos WHERE PhotoId = @id`);
 
         if (result.recordset.length === 0) {
             return res.status(404).send('Photo not found');
@@ -281,7 +281,7 @@ exports.getRetailerDocument = async (req, res) => {
         const request = new sql.Request();
         request.input('id', sql.VarChar, id);
 
-        const result = await request.query(`SELECT DocumentFile, DocumentType FROM RetailerDocuments WHERE DocumentId = @id`);
+        const result = await request.query(`SELECT DocumentFile, DocumentType FROM [onboarding].RetailerDocuments WHERE DocumentId = @id`);
 
         if (result.recordset.length === 0) {
             return res.status(404).send('Document not found');
@@ -324,7 +324,7 @@ exports.updateStatus = async (req, res) => {
         // Let's first fetch UserId
         const requestPre = new sql.Request();
         requestPre.input('id', sql.VarChar, id);
-        const retailerRes = await requestPre.query('SELECT UserId FROM Retailers WHERE RetailerId = @id');
+        const retailerRes = await requestPre.query('SELECT UserId FROM [onboarding].Retailers WHERE RetailerId = @id');
 
         if (retailerRes.recordset.length === 0) {
             return res.status(404).json({ success: false, message: 'Retailer not found' });
@@ -353,15 +353,15 @@ exports.updateStatus = async (req, res) => {
         request.input('approvedBy', sql.VarChar, approvedBy);
 
         await request.query(`
-            IF EXISTS (SELECT 1 FROM RetailerStatusTracking WHERE RetailerId = @retailerId)
+            IF EXISTS (SELECT 1 FROM [onboarding].RetailerStatusTracking WHERE RetailerId = @retailerId)
             BEGIN
-                UPDATE RetailerStatusTracking 
+                UPDATE [onboarding].RetailerStatusTracking 
                 SET Status = @status, Remark = @remark, ApprovedBy = @approvedBy, UpdatedAt = GETDATE()
                 WHERE RetailerId = @retailerId
             END
             ELSE
             BEGIN
-                INSERT INTO RetailerStatusTracking (RetailerId, Status, Remark, ApprovedBy, UpdatedAt)
+                INSERT INTO [onboarding].RetailerStatusTracking (RetailerId, Status, Remark, ApprovedBy, UpdatedAt)
                 VALUES (@retailerId, @status, @remark, @approvedBy, GETDATE())
             END
         `);
@@ -388,7 +388,7 @@ exports.getRetailerStats = async (req, res) => {
                 SUM(CASE WHEN Status = 'Pending' THEN 1 ELSE 0 END) as Pending,
                 SUM(CASE WHEN Status = 'Rejected' THEN 1 ELSE 0 END) as Rejected,
                 COUNT(*) as Total
-            FROM RetailerStatusTracking
+            FROM [onboarding].RetailerStatusTracking
         `;
 
         const request = new sql.Request();

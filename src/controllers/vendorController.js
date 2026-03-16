@@ -104,8 +104,8 @@ exports.getAllVendors = async (req, res) => {
                 VST.Status,
                 V.CreatedAt as OnboardingDate,
                 COUNT(*) OVER() as TotalCount
-            FROM Vendors V
-            LEFT JOIN VendorStatusTracking VST ON V.VendorId = VST.VendorId
+            FROM [onboarding].Vendors V
+            LEFT JOIN [onboarding].VendorStatusTracking VST ON V.VendorId = VST.VendorId
             ${whereString}
             ORDER BY VST.UpdatedAt DESC 
             OFFSET @offset ROWS 
@@ -149,9 +149,9 @@ exports.getVendorById = async (req, res) => {
                 VST.Status as DbStatus,
                 VST.Remark as DbRemark,
                 V.CreatedAt as OnboardingDate
-            FROM Vendors V
-            LEFT JOIN Users U ON V.UserId = U.UserId
-            LEFT JOIN VendorStatusTracking VST ON V.VendorId = VST.VendorId
+            FROM [onboarding].Vendors V
+            LEFT JOIN [onboarding].Users U ON V.UserId = U.UserId
+            LEFT JOIN [onboarding].VendorStatusTracking VST ON V.VendorId = VST.VendorId
             WHERE V.VendorId = @id
         `);
 
@@ -182,21 +182,21 @@ exports.getVendorById = async (req, res) => {
         // 2. Get Photos Metadata
         const photosResult = await request.query(`
             SELECT PhotoId, PhotoType, UploadedAt 
-            FROM VendorBusinessPhotos 
+            FROM [onboarding].VendorBusinessPhotos 
             WHERE VendorId = @id
         `);
 
         // 3. Get Documents Metadata
         const docsResult = await request.query(`
             SELECT DocumentId, DocumentType, UploadedAt 
-            FROM VendorDocuments 
+            FROM [onboarding].VendorDocuments 
             WHERE VendorId = @id
         `);
 
         // 4. Get Status History
         const historyResult = await request.query(`
             SELECT Status, Remark, UpdatedAt 
-            FROM VendorStatusTracking 
+            FROM [onboarding].VendorStatusTracking 
             WHERE VendorId = @id 
             ORDER BY UpdatedAt DESC
         `);
@@ -224,7 +224,7 @@ exports.getVendorPhoto = async (req, res) => {
         const request = new sql.Request();
         request.input('id', sql.VarChar, id);
 
-        const result = await request.query(`SELECT BusinessPhoto FROM VendorBusinessPhotos WHERE PhotoId = @id`);
+        const result = await request.query(`SELECT BusinessPhoto FROM [onboarding].VendorBusinessPhotos WHERE PhotoId = @id`);
 
         if (result.recordset.length === 0) {
             return res.status(404).send('Photo not found');
@@ -249,7 +249,7 @@ exports.getVendorDocument = async (req, res) => {
         const request = new sql.Request();
         request.input('id', sql.VarChar, id);
 
-        const result = await request.query(`SELECT DocumentFile, DocumentType FROM VendorDocuments WHERE DocumentId = @id`);
+        const result = await request.query(`SELECT DocumentFile, DocumentType FROM [onboarding].VendorDocuments WHERE DocumentId = @id`);
 
         if (result.recordset.length === 0) {
             return res.status(404).send('Document not found');
@@ -290,7 +290,7 @@ exports.updateStatus = async (req, res) => {
 
         const requestPre = new sql.Request();
         requestPre.input('id', sql.VarChar, id);
-        const vendorRes = await requestPre.query('SELECT UserId FROM Vendors WHERE VendorId = @id');
+        const vendorRes = await requestPre.query('SELECT UserId FROM [onboarding].Vendors WHERE VendorId = @id');
 
         if (vendorRes.recordset.length === 0) {
             return res.status(404).json({ success: false, message: 'Vendor not found' });
@@ -319,15 +319,15 @@ exports.updateStatus = async (req, res) => {
         request.input('approvedBy', sql.VarChar, approvedBy);
 
         await request.query(`
-            IF EXISTS (SELECT 1 FROM VendorStatusTracking WHERE VendorId = @vendorId)
+            IF EXISTS (SELECT 1 FROM [onboarding].VendorStatusTracking WHERE VendorId = @vendorId)
             BEGIN
-                UPDATE VendorStatusTracking 
+                UPDATE [onboarding].VendorStatusTracking 
                 SET Status = @status, Remark = @remark, ApprovedBy = @approvedBy, UpdatedAt = GETDATE()
                 WHERE VendorId = @vendorId
             END
             ELSE
             BEGIN
-                INSERT INTO VendorStatusTracking (VendorId, Status, Remark, ApprovedBy, UpdatedAt)
+                INSERT INTO [onboarding].VendorStatusTracking (VendorId, Status, Remark, ApprovedBy, UpdatedAt)
                 VALUES (@vendorId, @status, @remark, @approvedBy, GETDATE())
             END
         `);
@@ -354,7 +354,7 @@ exports.getVendorStats = async (req, res) => {
                 SUM(CASE WHEN Status = 'Pending' THEN 1 ELSE 0 END) as Pending,
                 SUM(CASE WHEN Status = 'Rejected' THEN 1 ELSE 0 END) as Rejected,
                 COUNT(*) as Total
-            FROM VendorStatusTracking
+            FROM [onboarding].VendorStatusTracking
         `;
 
         const request = new sql.Request();

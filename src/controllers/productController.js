@@ -24,8 +24,8 @@ exports.getAllProducts = async (req, res) => {
                 P.Status, P.CreatedAt,
                 V.BusinessName as VendorName,
                 COUNT(*) OVER() as TotalCount
-            FROM Products P WITH (NOLOCK)
-            LEFT JOIN Vendors V WITH (NOLOCK) ON P.VendorId = V.VendorId
+            FROM [onboarding].Products P WITH (NOLOCK)
+            LEFT JOIN [onboarding].Vendors V WITH (NOLOCK) ON P.VendorId = V.VendorId
             ${whereString}
             ORDER BY P.CreatedAt DESC
             OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY
@@ -36,7 +36,6 @@ exports.getAllProducts = async (req, res) => {
 
         const result = await request.query(query);
         const total = result.recordset.length > 0 ? result.recordset[0].TotalCount : 0;
-
         res.json({
             success: true,
             count: result.recordset.length,
@@ -61,8 +60,8 @@ exports.getProductById = async (req, res) => {
 
         const productResult = await request.query(`
             SELECT P.*, V.BusinessName as VendorName
-            FROM Products P WITH (NOLOCK)
-            LEFT JOIN Vendors V WITH (NOLOCK) ON P.VendorId = V.VendorId
+            FROM [onboarding].Products P WITH (NOLOCK)
+            LEFT JOIN [onboarding].Vendors V WITH (NOLOCK) ON P.VendorId = V.VendorId
             WHERE P.ProductId = @id
         `);
 
@@ -75,14 +74,14 @@ exports.getProductById = async (req, res) => {
         // Get images
         const imagesResult = await request.query(`
             SELECT ImageId, ImageType, UploadedAt 
-            FROM ProductImages 
+            FROM [onboarding].ProductImages 
             WHERE ProductId = @id
         `);
 
         // Get attributes
         const attributesResult = await request.query(`
             SELECT AttributeId, AttributeName, AttributeValue 
-            FROM ProductAttributes 
+            FROM [onboarding].ProductAttributes 
             WHERE ProductId = @id
         `);
 
@@ -116,7 +115,7 @@ exports.updateProductStatus = async (req, res) => {
         request.input('remark', sql.VarChar, remark || '');
 
         await request.query(`
-            UPDATE Products 
+            UPDATE [onboarding].Products 
             SET Status = @status, 
                 StatusRemark = @remark,
                 UpdatedAt = GETDATE()
@@ -137,7 +136,7 @@ exports.getProductImage = async (req, res) => {
         const request = new sql.Request();
         request.input('id', sql.Int, id);
 
-        const result = await request.query(`SELECT ProductImage FROM ProductImages WHERE ImageId = @id`);
+        const result = await request.query(`SELECT ProductImage FROM [onboarding].ProductImages WHERE ImageId = @id`);
 
         if (result.recordset.length === 0) {
             return res.status(404).send('Image not found');

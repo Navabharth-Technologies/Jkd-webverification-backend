@@ -7,7 +7,7 @@ exports.getStaffList = async (req, res) => {
         const request = new sql.Request();
         let query = `
             SELECT U.UserId, U.FullName, U.Email, U.Phone, U.AadharNumber, U.PANNumber, U.Status, U.CreatedAt, U.ApprovedBy
-            FROM Users U
+            FROM [onboarding].Users U
             WHERE 1=1
         `;
 
@@ -34,7 +34,7 @@ exports.getStaffList = async (req, res) => {
         console.log(`[API] Fetching Staff List. Filters: { Status: ${status || 'All'}, Start: ${startDate || 'N/A'}, End: ${endDate || 'N/A'} }. Result Count: ${result.recordset.length}`);
 
         if (result.recordset.length === 0) {
-            const checkTotal = await new sql.Request().query("SELECT COUNT(*) as count FROM Users");
+            const checkTotal = await new sql.Request().query("SELECT COUNT(*) as count FROM [onboarding].Users");
             console.log(`[DIAGNOSTIC] Query returned 0, but Total users in DB: ${checkTotal.recordset[0].count}`);
         }
 
@@ -51,7 +51,7 @@ exports.getStaffList = async (req, res) => {
 // Get Pending Staff List (Legacy support)
 exports.getPendingUsers = async (req, res) => {
     try {
-        const query = "SELECT UserId, FullName, Email, Phone, AadharNumber, PANNumber, CreatedAt FROM Users WHERE Status = 'Pending' ORDER BY CreatedAt DESC";
+        const query = "SELECT UserId, FullName, Email, Phone, AadharNumber, PANNumber, CreatedAt FROM [onboarding].Users WHERE Status = 'Pending' ORDER BY CreatedAt DESC";
         const request = new sql.Request();
         const result = await request.query(query);
         res.json({ success: true, users: result.recordset });
@@ -66,7 +66,7 @@ exports.getUserDetails = async (req, res) => {
     try {
         const request = new sql.Request();
         request.input('id', sql.VarChar, id);
-        const result = await request.query('SELECT UserId, FullName, Email, Phone, AadharNumber, PANNumber, Status, CreatedAt, ProfilePhoto FROM Users WHERE UserId = @id');
+        const result = await request.query('SELECT UserId, FullName, Email, Phone, AadharNumber, PANNumber, Status, CreatedAt, ProfilePhoto FROM [onboarding].Users WHERE UserId = @id');
 
         if (result.recordset.length === 0) {
             return res.status(404).json({ success: false, message: 'User not found' });
@@ -115,7 +115,7 @@ exports.approveUser = async (req, res) => {
         // 3. Update Status, PasswordHash, and Tracking Tags in DB
         request.input('passwordHash', sql.VarChar, passwordHash);
         await request.query(`
-            UPDATE Users 
+            UPDATE [onboarding].Users 
             SET Status = 'Approved', 
                 PasswordHash = @passwordHash,
                 ApprovedBy = 'Admin',
@@ -125,7 +125,7 @@ exports.approveUser = async (req, res) => {
 
         // 4. Send Welcome Email
         // First, fetch the user's email and name
-        const userResult = await request.query("SELECT FullName, Email FROM Users WHERE UserId = @userId");
+        const userResult = await request.query("SELECT FullName, Email FROM [onboarding].Users WHERE UserId = @userId");
         if (userResult.recordset.length > 0) {
             const user = userResult.recordset[0];
             const emailService = require('../services/emailService');
@@ -166,7 +166,7 @@ exports.rejectUser = async (req, res) => {
         request.input('reason', sql.NVarChar, reason || '');
 
         await request.query(`
-            UPDATE Users 
+            UPDATE [onboarding].Users 
             SET Status = 'Rejected', 
                 Remark = @reason,
                 ApprovedBy = NULL 

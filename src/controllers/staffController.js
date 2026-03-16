@@ -5,7 +5,7 @@ exports.getStaffList = async (req, res) => {
     try {
         const query = `
             SELECT UserId, FullName as Username
-            FROM Users
+            FROM [onboarding].Users
             ORDER BY FullName ASC
         `;
 

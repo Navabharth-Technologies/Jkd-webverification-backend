@@ -80,8 +80,8 @@ exports.getDashboardStats = async (req, res) => {
                 SUM(CASE WHEN T.Status = 'Pending' THEN 1 ELSE 0 END) as Pending,
                 SUM(CASE WHEN T.Status = 'Rejected' THEN 1 ELSE 0 END) as Rejected,
                 SUM(CASE WHEN T.Status = 'Auto-Approved' AND (T.Remark IS NULL OR T.Remark = '') THEN 1 ELSE 0 END) as New
-            FROM Retailers R
-            JOIN RetailerStatusTracking T ON R.RetailerId = T.RetailerId
+            FROM [onboarding].Retailers R
+            JOIN [onboarding].RetailerStatusTracking T ON R.RetailerId = T.RetailerId
             ${retailerWhereString}
         `;
 
@@ -92,8 +92,8 @@ exports.getDashboardStats = async (req, res) => {
                 SUM(CASE WHEN T.Status = 'Pending' THEN 1 ELSE 0 END) as Pending,
                 SUM(CASE WHEN T.Status = 'Rejected' THEN 1 ELSE 0 END) as Rejected,
                 SUM(CASE WHEN T.Status = 'Auto-Approved' AND (T.Remark IS NULL OR T.Remark = '') THEN 1 ELSE 0 END) as New
-            FROM Vendors V
-            JOIN VendorStatusTracking T ON V.VendorId = T.VendorId
+            FROM [onboarding].Vendors V
+            JOIN [onboarding].VendorStatusTracking T ON V.VendorId = T.VendorId
             ${vendorWhereString}
         `;
 
@@ -112,11 +112,12 @@ exports.getDashboardStats = async (req, res) => {
 
         const productQuery = `
             SELECT 
-                SUM(CASE WHEN Status = 'Approved' THEN 1 ELSE 0 END) as Approved,
-                SUM(CASE WHEN Status = 'Pending' OR Status IS NULL THEN 1 ELSE 0 END) as Pending,
-                SUM(CASE WHEN Status = 'Rejected' THEN 1 ELSE 0 END) as Rejected,
+                SUM(CASE WHEN P.Status = 'Approved' THEN 1 ELSE 0 END) as Approved,
+                SUM(CASE WHEN P.Status = 'Pending' OR P.Status IS NULL THEN 1 ELSE 0 END) as Pending,
+                SUM(CASE WHEN P.Status = 'Rejected' THEN 1 ELSE 0 END) as Rejected,
                 COUNT(*) as Total
-            FROM Products P
+            FROM [onboarding].Products P
+            LEFT JOIN [onboarding].Vendors V ON P.VendorId = V.VendorId
             ${productWhereString}
         `;
         const productResult = await request.query(productQuery);
@@ -187,15 +188,15 @@ exports.getDashboardDetails = async (req, res) => {
         if (type === 'retailer') {
             query = `
                 SELECT Base.RetailerId as id, Base.ShopName as name
-                FROM Retailers AS Base
-                JOIN RetailerStatusTracking T ON Base.RetailerId = T.RetailerId
+                FROM [onboarding].Retailers AS Base
+                JOIN [onboarding].RetailerStatusTracking T ON Base.RetailerId = T.RetailerId
                 ${whereString}
             `;
         } else {
             query = `
                 SELECT Base.VendorId as id, Base.BusinessName as name
-                FROM Vendors AS Base
-                JOIN VendorStatusTracking T ON Base.VendorId = T.VendorId
+                FROM [onboarding].Vendors AS Base
+                JOIN [onboarding].VendorStatusTracking T ON Base.VendorId = T.VendorId
                 ${whereString}
             `;
         }
@@ -255,9 +256,9 @@ exports.exportDashboardPdf = async (req, res) => {
                 Base.Town, Base.District, Base.State,
                 T.Status, Base.CreatedAt as Date,
                 U.FullName as StaffName
-            FROM Retailers Base
-            JOIN RetailerStatusTracking T ON Base.RetailerId = T.RetailerId
-            LEFT JOIN Users U ON Base.UserId = U.UserId
+            FROM [onboarding].Retailers Base
+            JOIN [onboarding].RetailerStatusTracking T ON Base.RetailerId = T.RetailerId
+            LEFT JOIN [onboarding].Users U ON Base.UserId = U.UserId
             ${whereString}
         `;
 
@@ -269,9 +270,9 @@ exports.exportDashboardPdf = async (req, res) => {
                 Base.Town, Base.District, Base.State,
                 T.Status, Base.CreatedAt as Date,
                 U.FullName as StaffName
-            FROM Vendors Base
-            JOIN VendorStatusTracking T ON Base.VendorId = T.VendorId
-            LEFT JOIN Users U ON Base.UserId = U.UserId
+            FROM [onboarding].Vendors Base
+            JOIN [onboarding].VendorStatusTracking T ON Base.VendorId = T.VendorId
+            LEFT JOIN [onboarding].Users U ON Base.UserId = U.UserId
             ${whereString}
         `;
 

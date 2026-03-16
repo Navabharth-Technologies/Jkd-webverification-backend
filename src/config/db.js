@@ -10,10 +10,10 @@ const config = {
     requestTimeout: 60000, // 60 seconds
     connectionTimeout: 60000, // 60 seconds
     options: {
-        encrypt: false,
+        encrypt: true,
         trustServerCertificate: true,
         enableArithAbort: true,
-        connectTimeout: 60000 // Redundant safety for tedious
+        connectTimeout: 60000 
     },
     pool: {
         max: 10,

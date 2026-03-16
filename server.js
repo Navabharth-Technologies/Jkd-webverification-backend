@@ -8,6 +8,7 @@ const vendorRoutes = require('./src/routes/vendorRoutes');
 const dashboardRoutes = require('./src/routes/dashboardRoutes');
 const adminUserRoutes = require('./src/routes/adminUserRoutes');
 const productRoutes = require('./src/routes/productRoutes');
+const locationRoutes = require('./src/routes/locationRoutes');
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use('/api/vendors', vendorRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin/users', adminUserRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/locations', locationRoutes);
 
 app.get('/', (req, res) => res.send('Server running'));
 app.get('/health', (req, res) => res.status(200).json({ status: "ok" }));

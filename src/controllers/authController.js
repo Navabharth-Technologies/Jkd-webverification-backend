@@ -20,11 +20,15 @@ exports.login = async (req, res) => {
             return res.json({ success: true, token, user: { id: 999, name: 'TestAdmin' } });
         }
 
+        if (!userid || !password) {
+            return res.status(400).json({ success: false, message: 'UserID and Password are required' });
+        }
+
         const request = new sql.Request();
-        request.input('userid', sql.VarChar, userid);
+        request.input('userid', sql.VarChar, userid.trim());
         
-        // Fetch user from onboarding.Admin table - use * to avoid naming issues
-        const query = 'SELECT * FROM onboarding.Admin WHERE AdminName = @userid';
+        // Use brackets for schema and table to be consistent with other modules
+        const query = 'SELECT * FROM [onboarding].[Admin] WHERE AdminName = @userid';
         console.log(`Executing Query: ${query} with UserID: ${userid}`);
         
         const result = await request.query(query);
@@ -33,9 +37,10 @@ exports.login = async (req, res) => {
 
         if (result.recordset.length > 0) {
             const admin = result.recordset[0];
-            // Try different case variations for password column just in case
+            
+            // Try different case variations for password column just in case SQL case-sensitivity is on
             const dbPassword = (admin.Password || admin.password || admin.PASSWORD || '').toString().trim();
-            const inputPassword = (password || '').toString().trim();
+            const inputPassword = password.toString().trim();
 
             console.log(`[AUTH] Checking match for Admin: ${admin.AdminName}`);
             
@@ -52,7 +57,7 @@ exports.login = async (req, res) => {
             console.log(`[AUTH] Is Match Result: ${isMatch}`);
 
             if (isMatch) {
-                const token = jwt.sign(
+                const tokenResponse = jwt.sign(
                     { id: admin.A_id || admin.a_id || 1, name: admin.AdminName, role: 'admin' },
                     process.env.JWT_SECRET || 'supersecretkey',
                     { expiresIn: '1d' }
@@ -61,7 +66,7 @@ exports.login = async (req, res) => {
                 console.log(`[AUTH] Login SUCCESS for: ${admin.AdminName}`);
                 return res.json({
                     success: true,
-                    token,
+                    token: tokenResponse,
                     user: {
                         id: admin.A_id || admin.a_id || 1,
                         name: admin.AdminName
@@ -77,11 +82,10 @@ exports.login = async (req, res) => {
         });
     } catch (err) {
         console.error('CRITICAL SERVER ERROR during login:', err);
-        // Temporarily return the error message to debug the 500 error
         return res.status(500).json({
             success: false,
             message: 'Server error',
-            error: err.message
+            error: err.message || 'Unknown server error'
         });
     }
 };

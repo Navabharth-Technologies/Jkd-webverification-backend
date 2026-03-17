@@ -107,7 +107,7 @@ exports.getAllVendors = async (req, res) => {
             FROM [onboarding].Vendors V
             LEFT JOIN [onboarding].VendorStatusTracking VST ON V.VendorId = VST.VendorId
             ${whereString}
-            ORDER BY VST.UpdatedAt DESC 
+            ORDER BY COALESCE(VST.UpdatedAt, V.CreatedAt) DESC 
             OFFSET @offset ROWS 
             FETCH NEXT @limit ROWS ONLY
         `;

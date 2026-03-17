@@ -126,7 +126,7 @@ exports.getAllRetailers = async (req, res) => {
             FROM [onboarding].Retailers R WITH (NOLOCK)
             LEFT JOIN LatestStatus RST ON R.RetailerId = RST.RetailerId AND RST.rn = 1
             ${whereString}
-            ORDER BY COALESCE(RST.UpdatedAt, R.CreatedAt) DESC 
+            ORDER BY R.CreatedAt DESC 
             OFFSET @offset ROWS 
             FETCH NEXT @limit ROWS ONLY
         `;

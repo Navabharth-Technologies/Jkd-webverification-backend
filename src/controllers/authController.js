@@ -6,12 +6,12 @@ exports.login = async (req, res) => {
     try {
         const { userid, password } = req.body;
 
-        console.log('--- LOGIN ATTEMPT ---');
+        console.log('--- LOGIN ATTEMPT (ADMIN ONLY) ---');
         console.log(`Input UserID: "${userid}"`);
-        console.log(`Input Password: "${password}"`);
-
+        
         // Emergency Test Account
         if (userid === 'testadmin' && password === 'test123') {
+            console.log('[AUTH] Emergency test account matched');
             const token = jwt.sign(
                 { id: 999, name: 'TestAdmin', role: 'admin' },
                 process.env.JWT_SECRET || 'supersecretkey',
@@ -23,7 +23,7 @@ exports.login = async (req, res) => {
         const request = new sql.Request();
         request.input('userid', sql.VarChar, userid);
         
-        // Fetch user from onboarding.Admin table
+        // Fetch user from onboarding.Admin table ONLY
         const query = 'SELECT AdminName, A_id, [Password] FROM onboarding.Admin WHERE AdminName = @userid';
         console.log(`Executing Query: ${query} with UserID: ${userid}`);
         
@@ -36,18 +36,19 @@ exports.login = async (req, res) => {
             const dbPassword = admin.Password ? admin.Password.toString().trim() : '';
             const inputPassword = password ? password.toString().trim() : '';
 
-            console.log(`DB Admin Results -> Name: ${admin.AdminName}, ID: ${admin.A_id}, PwdInDB: ${dbPassword}`);
+            console.log(`DB Admin Results -> Name: ${admin.AdminName}, ID: ${admin.A_id}`);
             
             let isMatch = false;
+            // Check if Password in DB is a bcrypt hash or plain text
             if (dbPassword.startsWith('$2a$') || dbPassword.startsWith('$2b$')) {
-                console.log('Using Bcrypt comparison...');
+                console.log('[AUTH] Using Bcrypt comparison...');
                 isMatch = await bcrypt.compare(inputPassword, dbPassword);
             } else {
-                console.log('Using Plain Text comparison...');
+                console.log('[AUTH] Using Plain Text comparison...');
                 isMatch = (inputPassword === dbPassword);
             }
 
-            console.log(`Is Match Result: ${isMatch}`);
+            console.log(`[AUTH] Is Match Result: ${isMatch}`);
 
             if (isMatch) {
                 const token = jwt.sign(
@@ -56,6 +57,7 @@ exports.login = async (req, res) => {
                     { expiresIn: '1d' }
                 );
 
+                console.log(`[AUTH] Login SUCCESS for: ${admin.AdminName}`);
                 return res.json({
                     success: true,
                     token,
@@ -67,39 +69,7 @@ exports.login = async (req, res) => {
             }
         }
 
-        // Fallback to Staff
-        console.log('Trying Staff Fallback...');
-        const userRequest = new sql.Request();
-        userRequest.input('userid', sql.VarChar, userid);
-        const userResult = await userRequest.query("SELECT UserId, FullName, PasswordHash FROM [onboarding].Users WHERE Email = @userid OR UserId = @userid");
-
-        if (userResult.recordset.length > 0) {
-            const user = userResult.recordset[0];
-            const dbHash = user.PasswordHash ? user.PasswordHash.toString().trim() : '';
-            const inputPass = password ? password.toString().trim() : '';
-            
-            const isMatch = await bcrypt.compare(inputPass, dbHash);
-            console.log(`Staff Bcrypt Match: ${isMatch}`);
-
-            if (isMatch) {
-                const token = jwt.sign(
-                    { id: user.UserId, name: user.FullName, role: 'admin' },
-                    process.env.JWT_SECRET || 'supersecretkey',
-                    { expiresIn: '1d' }
-                );
-
-                return res.json({
-                    success: true,
-                    token,
-                    user: {
-                        id: user.UserId,
-                        name: user.FullName
-                    }
-                });
-            }
-        }
-
-        console.log('Login FAILED');
+        console.log(`[AUTH] Login FAILED for: "${userid}"`);
         return res.status(401).json({
             success: false,
             message: 'Invalid credentials'

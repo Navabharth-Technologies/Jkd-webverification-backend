@@ -89,6 +89,7 @@ exports.getAllVendors = async (req, res) => {
 
         const whereString = whereClauses.length > 0 ? " WHERE " + whereClauses.join(" AND ") : "";
 
+        // Use a subquery to get only the LATEST status per vendor to prevent duplicate rows
         let query = `
             SELECT 
                 V.VendorId, 
@@ -105,9 +106,13 @@ exports.getAllVendors = async (req, res) => {
                 V.CreatedAt as OnboardingDate,
                 COUNT(*) OVER() as TotalCount
             FROM [onboarding].Vendors V
-            LEFT JOIN [onboarding].VendorStatusTracking VST ON V.VendorId = VST.VendorId
+            LEFT JOIN (
+                SELECT VendorId, Status, UpdatedAt,
+                    ROW_NUMBER() OVER (PARTITION BY VendorId ORDER BY UpdatedAt DESC) as rn
+                FROM [onboarding].VendorStatusTracking
+            ) VST ON V.VendorId = VST.VendorId AND VST.rn = 1
             ${whereString}
-            ORDER BY COALESCE(VST.UpdatedAt, V.CreatedAt) DESC 
+            ORDER BY V.CreatedAt DESC 
             OFFSET @offset ROWS 
             FETCH NEXT @limit ROWS ONLY
         `;
@@ -130,7 +135,7 @@ exports.getAllVendors = async (req, res) => {
         });
     } catch (err) {
         console.error('Error fetching vendors:', err);
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.status(500).json({ success: false, message: 'Server error', error: err.message });
     }
 };
 

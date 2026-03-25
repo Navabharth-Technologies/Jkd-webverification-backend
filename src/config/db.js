@@ -7,13 +7,13 @@ const config = {
     server: process.env.DB_SERVER || 'jkdmartdb.cb0ia6ew0vnf.ap-south-1.rds.amazonaws.com',
     database: process.env.DB_DATABASE || 'jkdmart',
     port: parseInt(process.env.DB_PORT) || 1433,
-    requestTimeout: 60000, // 60 seconds
-    connectionTimeout: 60000, // 60 seconds
+    requestTimeout: 90000, 
+    connectionTimeout: 90000, 
     options: {
         encrypt: true,
         trustServerCertificate: true,
         enableArithAbort: true,
-        connectTimeout: 60000 
+        connectTimeout: 90000 
     },
     pool: {
         max: 10,
@@ -22,17 +22,33 @@ const config = {
     }
 };
 
+let pool = null;
+let poolPromise = null;
+
 const connectDB = async () => {
-     try {
-         await sql.connect(config);
-        console.log('SQL Server Connected Configured');
+    try {
+        if (pool) return pool;
+        
+        if (!poolPromise) {
+            console.log('[DB] Starting connection attempt...');
+            poolPromise = sql.connect(config)
+                .then(newPool => {
+                    pool = newPool;
+                    console.log('[DB] SQL Server Connected & Pool Created');
+                    return newPool;
+                })
+                .catch(err => {
+                    poolPromise = null; // Reset promise so we can retry
+                    console.error('[DB] Connection attempt failed:', err.message);
+                    throw err;
+                });
+        }
+        
+        return await poolPromise;
     } catch (err) {
-        console.error('Database connection failed (Check .env configuration):', err.message);
-        // Do not exit, allow retry logic to handle reconnection or fail gracefully
+        console.error('[DB] connectDB failed:', err.message);
         throw err;
     }
 };
-
-
 
 module.exports = { connectDB, sql };

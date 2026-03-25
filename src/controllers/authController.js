@@ -1,60 +1,51 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { sql } = require('../config/db');
+const { sql, connectDB } = require('../config/db');
 
 exports.login = async (req, res) => {
     try {
         const { userid, password } = req.body;
 
         console.log('--- LOGIN ATTEMPT (ADMIN ONLY) ---');
-        console.log(`Input UserID: "${userid}"`);
+        console.log(`[AUTH] Checking Input UserID: "${userid || 'UNDEFINED'}"`);
         
-        // Emergency Test Account
-        if (userid === 'testadmin' && password === 'test123') {
-            console.log('[AUTH] Emergency test account matched');
-            const token = jwt.sign(
-                { id: 999, name: 'TestAdmin', role: 'admin' },
-                process.env.JWT_SECRET || 'supersecretkey',
-                { expiresIn: '1d' }
-            );
-            return res.json({ success: true, token, user: { id: 999, name: 'TestAdmin' } });
-        }
-
         if (!userid || !password) {
-            return res.status(400).json({ success: false, message: 'UserID and Password are required' });
+            return res.status(400).json({
+                success: false,
+                message: 'UserID and Password are required'
+            });
         }
 
-        const request = new sql.Request();
+        // Ensure connection is established before query
+        const pool = await connectDB();
+        const request = pool.request();
+        
         request.input('userid', sql.VarChar, userid.trim());
         
-        // Use brackets for schema and table to be consistent with other modules
         const query = 'SELECT * FROM [onboarding].[Admin] WHERE AdminName = @userid';
-        console.log(`Executing Query: ${query} with UserID: ${userid}`);
+        console.log(`[AUTH] Executing Query: ${query} with UserID: ${userid}`);
         
         const result = await request.query(query);
 
-        console.log(`Matches found in onboarding.Admin: ${result.recordset.length}`);
+        console.log(`[AUTH] Matches found in DB: ${result.recordset.length}`);
 
         if (result.recordset.length > 0) {
             const admin = result.recordset[0];
-            
-            // Try different case variations for password column just in case SQL case-sensitivity is on
             const dbPassword = (admin.Password || admin.password || admin.PASSWORD || '').toString().trim();
             const inputPassword = password.toString().trim();
 
-            console.log(`[AUTH] Checking match for Admin: ${admin.AdminName}`);
+            console.log(`[AUTH] Matching Admin Found: ${admin.AdminName}`);
             
             let isMatch = false;
-            // Check if Password in DB is a bcrypt hash or plain text
             if (dbPassword.startsWith('$2a$') || dbPassword.startsWith('$2b$')) {
-                console.log('[AUTH] Using Bcrypt comparison...');
+                console.log('[AUTH] Bcrypt comparison...');
                 isMatch = await bcrypt.compare(inputPassword, dbPassword);
             } else {
-                console.log('[AUTH] Using Plain Text comparison...');
+                console.log('[AUTH] Plain Text comparison...');
                 isMatch = (inputPassword === dbPassword);
             }
 
-            console.log(`[AUTH] Is Match Result: ${isMatch}`);
+            console.log(`[AUTH] Is Match: ${isMatch}`);
 
             if (isMatch) {
                 const tokenResponse = jwt.sign(
@@ -75,17 +66,18 @@ exports.login = async (req, res) => {
             }
         }
 
-        console.log(`[AUTH] Login FAILED for: "${userid}"`);
+        console.log(`[AUTH] Login FAILED (Invalid Credentials) for: "${userid}"`);
         return res.status(401).json({
             success: false,
-            message: 'Invalid credentials'
+            message: 'Invalid credentials. User not found or password incorrect.'
         });
     } catch (err) {
-        console.error('CRITICAL SERVER ERROR during login:', err);
+        console.error('[AUTH] CRITICAL ERROR:', err);
         return res.status(500).json({
             success: false,
-            message: 'Server error',
-            error: err.message || 'Unknown server error'
+            message: `Server Error: ${err.message}`,
+            error: err.message,
+            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
         });
     }
 };

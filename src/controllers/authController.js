@@ -8,7 +8,7 @@ exports.login = async (req, res) => {
 
         console.log('--- LOGIN ATTEMPT (ADMIN ONLY) ---');
         console.log(`[AUTH] Checking Input UserID: "${userid || 'UNDEFINED'}"`);
-        
+
         if (!userid || !password) {
             return res.status(400).json({
                 success: false,
@@ -19,12 +19,12 @@ exports.login = async (req, res) => {
         // Ensure connection is established before query
         const pool = await connectDB();
         const request = pool.request();
-        
+
         request.input('userid', sql.VarChar, userid.trim());
-        
+
         const query = 'SELECT * FROM [onboarding].[Admin] WHERE AdminName = @userid';
         console.log(`[AUTH] Executing Query: ${query} with UserID: ${userid}`);
-        
+
         const result = await request.query(query);
 
         console.log(`[AUTH] Matches found in DB: ${result.recordset.length}`);
@@ -35,7 +35,7 @@ exports.login = async (req, res) => {
             const inputPassword = password.toString().trim();
 
             console.log(`[AUTH] Matching Admin Found: ${admin.AdminName}`);
-            
+
             let isMatch = false;
             if (dbPassword.startsWith('$2a$') || dbPassword.startsWith('$2b$')) {
                 console.log('[AUTH] Bcrypt comparison...');

@@ -1,0 +1,10 @@
+{
+    "name": "adminwebapplication-backend",
+    "version": "1.0.0",
+    "description": "Backend for AdminWebApplication - contains admin and webverification servers",
+    "scripts": {
+        "start:admin": "cd admin && node server.js",
+        "start:web": "cd webverification && node server.js"
+    },
+    "private": true
+}

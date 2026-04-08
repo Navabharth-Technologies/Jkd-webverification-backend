@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const config = {
     user: process.env.DB_USER || 'admin',
-    password: process.env.DB_PASSWORD || 'JKDmart123456',
+    password: (process.env.DB_PASSWORD || 'JKD@#12345').replace(/^["']|["']$/g, ''),
     server: process.env.DB_SERVER || 'jkdmart.database.windows.net',
     database: process.env.DB_NAME || 'jkdmartdb',
     port: parseInt(process.env.DB_PORT) || 1433,

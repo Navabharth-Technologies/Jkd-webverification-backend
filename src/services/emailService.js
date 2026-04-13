@@ -1,14 +1,5 @@
 const nodemailer = require('nodemailer');
 
-// Define SMTP transporter
-const transporter = nodemailer.createTransport({
-    service: 'gmail', // Use 'gmail' service helper which handles host/port/secure defaults
-    auth: {
-        user: (process.env.SMTP_USER || 'support@jkdmart.com').replace(/^["']|["']$/g, '').trim(),
-        pass: (process.env.SMTP_PASS || 'qgbsbitnyncxmqyy').replace(/^["']|["']$/g, '').trim(),
-    }
-});
-
 /**
  * Sends a welcome email to the approved staff member.
  * @param {string} toEmail - Recipient email.
@@ -16,13 +7,22 @@ const transporter = nodemailer.createTransport({
  * @param {string} password - Generated password.
  */
 exports.sendApprovalEmail = async (toEmail, fullName, password) => {
-    // Safe fallback for sender email
+    // Initialize transporter inside the function to ensure process.env is ready
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: (process.env.SMTP_USER || 'support@jkdmart.com').replace(/^["']|["']$/g, '').trim(),
+            pass: (process.env.SMTP_PASS || 'qgbsbitnyncxmqyy').replace(/^["']|["']$/g, '').trim(),
+        }
+    });
+
     const senderEmail = (process.env.SMTP_USER || 'support@jkdmart.com').replace(/^["']|["']$/g, '').trim();
 
     const mailOptions = {
         from: `"JKD Mart Admin" <${senderEmail}>`,
         to: toEmail,
-        subject: 'Your JKD Mart Profile is Approved ✅',
+        subject: `JKD Mart Profile Approved ✅ - Password Included`,
+        text: `Welcome to JKD Mart, ${fullName}!\n\nYour profile has been approved. You can now login to the Staff App.\n\nCredentials:\nEmail: ${toEmail}\nPassword: ${password}\n\nPlease change your password after logging in for the first time.`,
         html: `
             <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #1a1f37; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
                 <div style="background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%); padding: 30px; text-align: center;">
@@ -37,11 +37,11 @@ exports.sendApprovalEmail = async (toEmail, fullName, password) => {
                         <table style="width: 100%; border-collapse: collapse;">
                             <tr>
                                 <td style="padding: 8px 0; color: #64748b; width: 100px;"><strong>Email:</strong></td>
-                                <td style="padding: 8px 0; color: #1a1f37;">${toEmail}</td>
+                                <td style="padding: 8px 0; color: #1a1f37; font-weight: bold;">${toEmail}</td>
                             </tr>
                             <tr>
                                 <td style="padding: 8px 0; color: #64748b;"><strong>Password:</strong></td>
-                                <td style="padding: 8px 0; color: #1a1f37;"><code style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${password}</code></td>
+                                <td style="padding: 8px 0; color: #1a1f37;"><code style="background: #e2e8f0; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 18px; color: #A855F7;">${password}</code></td>
                             </tr>
                         </table>
                     </div>
@@ -62,12 +62,12 @@ exports.sendApprovalEmail = async (toEmail, fullName, password) => {
     };
 
     try {
-        console.log(`[Email Service] Attempting to send approval email to: ${toEmail}`);
+        console.log(`[Email Service] Starting send for: ${toEmail}`);
         const info = await transporter.sendMail(mailOptions);
-        console.log(`[Email Service] Message sent: ${info.messageId}`);
+        console.log(`[Email Service] Success! ID: ${info.messageId}`);
         return true;
     } catch (error) {
-        console.error(`[Email Service] Error sending to ${toEmail}:`, error);
+        console.error(`[Email Service] CRITICAL ERROR sending to ${toEmail}:`, error.message);
         return false;
     }
 };

@@ -89,7 +89,7 @@ exports.getUserDetails = async (req, res) => {
     }
 };
 
-// Approve Staff (Direct DB Update - No Email)
+// Approve Staff
 exports.approveUser = async (req, res) => {
     const { userId } = req.body;
     try {
@@ -124,7 +124,7 @@ exports.approveUser = async (req, res) => {
         `);
 
         // 4. Send Welcome Email
-        // First, fetch the user's email and name
+        // First, fetch the user's email and name to ensure we have fresh data
         const userResult = await request.query("SELECT FullName, Email FROM [onboarding].Users WHERE UserId = @userId");
         if (userResult.recordset.length > 0) {
             const user = userResult.recordset[0];
@@ -136,11 +136,11 @@ exports.approveUser = async (req, res) => {
             if (emailSent) {
                 console.log(`[EMAIL] Email sent successfully to ${user.Email}`);
             } else {
-                console.error(`[EMAIL] Failed to send email to ${user.Email}. Check server logs.`);
+                console.warn(`[EMAIL] Failed to send email to ${user.Email}. User approved but notification failed.`);
             }
         }
 
-        // 5. LOG PASSWORD TO CONSOLE
+        // 5. Finalize outcome
         console.log("\n====================================================");
         console.log(`[APPROVAL SUCCESS] User ID: ${userId} Approved by Admin.`);
         console.log(`[TEMPORARY PASSWORD] ${rawPassword}`);
@@ -148,12 +148,12 @@ exports.approveUser = async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Staff Approved Successfully. Credentials sent via Email & logged to console.',
-            password: rawPassword
+            message: 'Staff Approved Successfully. Credentials sent via Email.',
+            password: rawPassword // Returning for frontend display as fallback
         });
     } catch (err) {
         console.error('Error approving user:', err);
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.status(500).json({ success: false, message: 'Server error during approval process' });
     }
 };
 

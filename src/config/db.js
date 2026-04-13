@@ -2,10 +2,10 @@ const sql = require('mssql');
 require('dotenv').config();
 
 const config = {
-    user: 'jkdmart',
-    password: 'JKD@#12345',
-    server: 'jkdmart.database.windows.net',
-    database: 'jkdmartdb',
+    user: process.env.DB_USER || 'admin',
+    password: process.env.DB_PASSWORD || 'JKDmart123456',
+    server: process.env.DB_SERVER || 'jkdmart.database.windows.net',
+    database: process.env.DB_NAME || 'jkdmartdb',
     port: parseInt(process.env.DB_PORT) || 1433,
     requestTimeout: 90000, 
     connectionTimeout: 90000, 

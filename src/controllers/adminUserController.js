@@ -119,7 +119,8 @@ exports.approveUser = async (req, res) => {
             SET Status = 'Approved', 
                 PasswordHash = @passwordHash,
                 ApprovedBy = 'Admin',
-                Remark = NULL
+                Remark = NULL,
+                UpdatedAt = GETDATE()
             WHERE UserId = @userId
         `);
 
@@ -130,14 +131,21 @@ exports.approveUser = async (req, res) => {
             const user = userResult.recordset[0];
             const emailService = require('../services/emailService');
 
-            console.log(`[EMAIL] Attempting to send welcome email to ${user.Email}...`);
-            const emailSent = await emailService.sendApprovalEmail(user.Email, user.FullName, rawPassword);
+            console.log(`[EMAIL-DEBUG] Starting email process for ${user.Email} (${user.FullName})`);
+            
+            try {
+                const emailSent = await emailService.sendApprovalEmail(user.Email, user.FullName, rawPassword);
 
-            if (emailSent) {
-                console.log(`[EMAIL] Email sent successfully to ${user.Email}`);
-            } else {
-                console.warn(`[EMAIL] Failed to send email to ${user.Email}. User approved but notification failed.`);
+                if (emailSent) {
+                    console.log(`[EMAIL-SUCCESS] Email sent successfully to ${user.Email}`);
+                } else {
+                    console.warn(`[EMAIL-FAILURE] emailService.sendApprovalEmail returned false for ${user.Email}`);
+                }
+            } catch (emailErr) {
+                console.error(`[EMAIL-ERROR] Exception caught during email sending to ${user.Email}:`, emailErr.message);
             }
+        } else {
+            console.warn(`[EMAIL-WARNING] Could not find user details for email notification (UserId: ${userId})`);
         }
 
         // 5. Finalize outcome

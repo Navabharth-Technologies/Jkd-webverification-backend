@@ -3,12 +3,15 @@ const nodemailer = require('nodemailer');
 // Define SMTP transporter
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: process.env.SMTP_PORT || 587,
+    port: parseInt(process.env.SMTP_PORT) || 587,
     secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
     auth: {
         user: (process.env.SMTP_USER || 'support@jkdmart.com').replace(/^["']|["']$/g, '').trim(),
         pass: (process.env.SMTP_PASS || 'qgbsbitnyncxmqyy').replace(/^["']|["']$/g, '').trim(),
     },
+    tls: {
+        rejectUnauthorized: false
+    }
 });
 
 /**

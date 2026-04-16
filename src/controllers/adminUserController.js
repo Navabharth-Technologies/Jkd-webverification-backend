@@ -89,7 +89,7 @@ exports.getUserDetails = async (req, res) => {
     }
 };
 
-// Approve Staff (Direct DB Update - No Email)
+// Approve Staff
 exports.approveUser = async (req, res) => {
     const { userId } = req.body;
     try {
@@ -119,28 +119,36 @@ exports.approveUser = async (req, res) => {
             SET Status = 'Approved', 
                 PasswordHash = @passwordHash,
                 ApprovedBy = 'Admin',
-                Remark = NULL
+                Remark = NULL,
+                UpdatedAt = GETDATE()
             WHERE UserId = @userId
         `);
 
         // 4. Send Welcome Email
-        // First, fetch the user's email and name
+        // First, fetch the user's email and name to ensure we have fresh data
         const userResult = await request.query("SELECT FullName, Email FROM [onboarding].Users WHERE UserId = @userId");
         if (userResult.recordset.length > 0) {
             const user = userResult.recordset[0];
             const emailService = require('../services/emailService');
 
-            console.log(`[EMAIL] Attempting to send welcome email to ${user.Email}...`);
-            const emailSent = await emailService.sendApprovalEmail(user.Email, user.FullName, rawPassword);
+            console.log(`[EMAIL-DEBUG] Starting email process for ${user.Email} (${user.FullName})`);
+            
+            try {
+                const emailSent = await emailService.sendApprovalEmail(user.Email, user.FullName, rawPassword);
 
-            if (emailSent) {
-                console.log(`[EMAIL] Email sent successfully to ${user.Email}`);
-            } else {
-                console.error(`[EMAIL] Failed to send email to ${user.Email}. Check server logs.`);
+                if (emailSent) {
+                    console.log(`[EMAIL-SUCCESS] Email sent successfully to ${user.Email}`);
+                } else {
+                    console.warn(`[EMAIL-FAILURE] emailService.sendApprovalEmail returned false for ${user.Email}`);
+                }
+            } catch (emailErr) {
+                console.error(`[EMAIL-ERROR] Exception caught during email sending to ${user.Email}:`, emailErr.message);
             }
+        } else {
+            console.warn(`[EMAIL-WARNING] Could not find user details for email notification (UserId: ${userId})`);
         }
 
-        // 5. LOG PASSWORD TO CONSOLE
+        // 5. Finalize outcome
         console.log("\n====================================================");
         console.log(`[APPROVAL SUCCESS] User ID: ${userId} Approved by Admin.`);
         console.log(`[TEMPORARY PASSWORD] ${rawPassword}`);
@@ -148,12 +156,12 @@ exports.approveUser = async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Staff Approved Successfully. Credentials sent via Email & logged to console.',
-            password: rawPassword
+            message: 'Staff Approved Successfully. Credentials sent via Email.',
+            password: rawPassword // Returning for frontend display as fallback
         });
     } catch (err) {
         console.error('Error approving user:', err);
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.status(500).json({ success: false, message: 'Server error during approval process' });
     }
 };
 

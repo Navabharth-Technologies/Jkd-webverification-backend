@@ -4,8 +4,8 @@ require('dotenv').config();
 const config = {
     user: process.env.DB_USER || 'admin',
     password: process.env.DB_PASSWORD || 'JKDmart123456',
-    server: process.env.DB_SERVER || 'jkdmartdb.cb0ia6ew0vnf.ap-south-1.rds.amazonaws.com',
-    database: process.env.DB_DATABASE || 'jkdmart',
+    server: process.env.DB_SERVER || 'jkdmart.database.windows.net',
+    database: process.env.DB_NAME || 'jkdmartdb',
     port: parseInt(process.env.DB_PORT) || 1433,
     requestTimeout: 90000, 
     connectionTimeout: 90000, 

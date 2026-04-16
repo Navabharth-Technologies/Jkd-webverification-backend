@@ -7,7 +7,7 @@ const transporter = nodemailer.createTransport({
     secure: process.env.SMTP_SECURE === 'true',
     auth: {
         user: (process.env.SMTP_USER || 'support@jkdmart.com').replace(/^["']|["']$/g, '').trim(),
-        pass: (process.env.SMTP_PASS || 'qgbsbitnyncxmqyy').replace(/^["']|["']$/g, '').trim(),
+        pass: (process.env.SMTP_PASS || 'kjidaugnbysczgjd').replace(/^["']|["']$/g, '').trim(),
     },
 });
 

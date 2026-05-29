@@ -1,15 +1,15 @@
 {
   "name": "adminfrontend",
   "version": "1.0.0",
-  "homepage": "https://Navabharth-Technologies.github.io/Jkd-webverification-backend",
+  "homepage": "https://Navabharth-Technologies.github.io/web-verification-host",
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
+    "predeploy": "npm run build && powershell -ExecutionPolicy Bypass -File ../inject-icons.ps1",
+    "deploy": "gh-pages -t -d dist",
     "build": "expo export --platform web"
   },
   "dependencies": {

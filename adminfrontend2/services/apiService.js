@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
 export const BASE_URL = "https://jkd-webverification-cfe7b0e5f6ehgqca.centralindia-01.azurewebsites.net".replace(/\/+$/, "");
 export const ONBOARDING_BASE_URL = "https://jkd-onboarding-f2e6hzfubndjhrc5.centralindia-01.azurewebsites.net".replace(/\/+$/, "");
-if (Platform.OS === "web") {
+if (Platform.OS === "web" && typeof window !== "undefined") {
   window.API_BASE_URL = BASE_URL;
   window.API_ONBOARDING_URL = ONBOARDING_BASE_URL;
 }
@@ -144,9 +144,11 @@ export const apiService = {
   getDashboardStats: async (params) => {
     try {
       const queryParams = new URLSearchParams();
-      Object.entries(params).forEach(([key, value]) => {
-        if (value) queryParams.append(key, value);
-      });
+      if (params && typeof params === 'object') {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value) queryParams.append(key, value);
+        });
+      }
 
       const response = await fetchWithTimeout(
         `${BASE_URL}/api/dashboard/stats?${queryParams.toString()}`,
@@ -260,7 +262,7 @@ export const apiService = {
       const extension = params.format === "pdf" ? "pdf" : "xlsx";
       const filename = `dashboard_export_${timestamp}.${extension}`;
 
-      if (Platform.OS === "web") {
+      if (Platform.OS === "web" && typeof window !== "undefined") {
         // Determine the correct MIME type
         const mimeType =
           params.format === "pdf"
@@ -271,7 +273,8 @@ export const apiService = {
         const blob = new Blob([responseBlob], { type: mimeType });
 
         // Create blob URL and trigger download
-        const blobUrl = window.URL.createObjectURL(blob);
+        const URL_OBJ = window.URL || window.webkitURL;
+        const blobUrl = URL_OBJ.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = blobUrl;
         link.setAttribute("download", filename);
@@ -284,7 +287,7 @@ export const apiService = {
         // Cleanup with delay to ensure download starts
         setTimeout(() => {
           document.body.removeChild(link);
-          window.URL.revokeObjectURL(blobUrl);
+          URL_OBJ.revokeObjectURL(blobUrl);
         }, 100);
       } else {
         console.log("Mobile download not yet implemented");

@@ -19,31 +19,43 @@ $iconCode = @'
   /* Global Fixes */
   @font-face {
     font-family: 'MaterialIcons';
-    src: url('https://fonts.gstatic.com/s/materialicons/v142/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2') format('woff2');
+    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/MaterialIcons.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Material Icons';
+    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/MaterialIcons.ttf') format('truetype');
   }
   @font-face {
     font-family: 'Ionicons';
-    src: url('https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/fonts/ionicons.ttf') format('truetype');
+    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/Ionicons.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'ionicons';
+    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/Ionicons.ttf') format('truetype');
   }
   @font-face {
     font-family: 'Material Community Icons';
-    src: url('https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/fonts/materialdesignicons-webfont.woff2?v=7.4.47') format('woff2');
+    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'MaterialCommunityIcons';
+    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf') format('truetype');
   }
   @font-face {
     font-family: 'FontAwesome';
-    src: url('https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-solid-900.woff2') format('woff2');
+    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/FontAwesome.ttf') format('truetype');
   }
   @font-face {
     font-family: 'FontAwesome5Free-Solid';
-    src: url('https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-solid-900.woff2') format('woff2');
+    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf') format('truetype');
   }
   @font-face {
     font-family: 'FontAwesome5Free-Regular';
-    src: url('https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-regular-400.woff2') format('woff2');
+    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf') format('truetype');
   }
   @font-face {
     font-family: 'FontAwesome5Brands-Regular';
-    src: url('https://use.fontawesome.com/releases/v5.15.4/webfonts/fa-brands-400.woff2') format('woff2');
+    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf') format('truetype');
   }
   input:-webkit-autofill,
   input:-webkit-autofill:hover, 

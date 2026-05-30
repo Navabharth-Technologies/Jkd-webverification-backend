@@ -96,14 +96,31 @@ exports.approveUser = async (req, res) => {
         const request = new sql.Request();
         request.input('userId', sql.VarChar, userId);
 
-        // 1. Generate Secure Random Password (8 chars)
+        // 1. Generate Secure Random Password (8 chars, strict requirements)
         const generatePassword = () => {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#';
-            let pass = '';
-            for (let i = 0; i < 8; i++) {
-                pass += chars.charAt(Math.floor(Math.random() * chars.length));
+            const uppers = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const lowers = 'abcdefghijklmnopqrstuvwxyz';
+            const numbers = '0123456789';
+            const specials = '@#$%&*!';
+            const allChars = uppers + lowers + numbers + specials;
+            
+            let passArray = [
+                uppers.charAt(Math.floor(Math.random() * uppers.length)),
+                lowers.charAt(Math.floor(Math.random() * lowers.length)),
+                numbers.charAt(Math.floor(Math.random() * numbers.length)),
+                specials.charAt(Math.floor(Math.random() * specials.length))
+            ];
+            
+            for (let i = 0; i < 4; i++) {
+                passArray.push(allChars.charAt(Math.floor(Math.random() * allChars.length)));
             }
-            return pass;
+            
+            for (let i = passArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [passArray[i], passArray[j]] = [passArray[j], passArray[i]];
+            }
+            
+            return passArray.join('');
         };
         const rawPassword = generatePassword();
 

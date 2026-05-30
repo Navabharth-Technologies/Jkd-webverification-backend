@@ -9,7 +9,9 @@ const nodemailer = require('nodemailer');
 exports.sendApprovalEmail = async (toEmail, fullName, password) => {
     // Initialize transporter inside the function to ensure process.env is ready
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.SMTP_PORT) || 587,
+        secure: process.env.SMTP_SECURE === 'true',
         auth: {
             user: (process.env.SMTP_USER || 'support@jkdmart.com').replace(/^["']|["']$/g, '').trim(),
             pass: (process.env.SMTP_PASS || 'qgbsbitnyncxmqyy').replace(/^["']|["']$/g, '').trim(),

@@ -11,51 +11,68 @@ if (!(Test-Path $distDir)) {
 
 Write-Host "TARGET DIST DIRECTORY: $distDir"
 
+# Identify fonts source and target
+$fontsSourceDir = Join-Path $PSScriptRoot "adminfrontend2/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts"
+if (!(Test-Path $fontsSourceDir)) {
+    $fontsSourceDir = Join-Path $PSScriptRoot "node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts"
+}
+
+$fontsTargetDir = Join-Path $distDir "fonts"
+if (!(Test-Path $fontsTargetDir)) {
+    New-Item -Path $fontsTargetDir -ItemType Directory -Force | Out-Null
+}
+
+if (Test-Path $fontsSourceDir) {
+    Copy-Item -Path (Join-Path $fontsSourceDir "*.ttf") -Destination $fontsTargetDir -Force
+    Write-Host "SUCCESS: Copied local TTF fonts to $fontsTargetDir"
+} else {
+    Write-Warning "FONTS SOURCE DIRECTORY NOT FOUND: $fontsSourceDir"
+}
+
 $iconCode = @'
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css" />
 <style>
   /* Global Fixes */
   @font-face {
     font-family: 'MaterialIcons';
-    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/MaterialIcons.ttf') format('truetype');
+    src: url('/web-verification-host/fonts/MaterialIcons.ttf') format('truetype');
   }
   @font-face {
     font-family: 'Material Icons';
-    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/MaterialIcons.ttf') format('truetype');
+    src: url('/web-verification-host/fonts/MaterialIcons.ttf') format('truetype');
   }
   @font-face {
     font-family: 'Ionicons';
-    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/Ionicons.ttf') format('truetype');
+    src: url('/web-verification-host/fonts/Ionicons.ttf') format('truetype');
   }
   @font-face {
     font-family: 'ionicons';
-    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/Ionicons.ttf') format('truetype');
+    src: url('/web-verification-host/fonts/Ionicons.ttf') format('truetype');
   }
   @font-face {
     font-family: 'Material Community Icons';
-    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf') format('truetype');
+    src: url('/web-verification-host/fonts/MaterialCommunityIcons.ttf') format('truetype');
   }
   @font-face {
     font-family: 'MaterialCommunityIcons';
-    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf') format('truetype');
+    src: url('/web-verification-host/fonts/MaterialCommunityIcons.ttf') format('truetype');
   }
   @font-face {
     font-family: 'FontAwesome';
-    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/FontAwesome.ttf') format('truetype');
+    src: url('/web-verification-host/fonts/FontAwesome.ttf') format('truetype');
   }
   @font-face {
     font-family: 'FontAwesome5Free-Solid';
-    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf') format('truetype');
+    src: url('/web-verification-host/fonts/FontAwesome5_Solid.ttf') format('truetype');
   }
   @font-face {
     font-family: 'FontAwesome5Free-Regular';
-    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf') format('truetype');
+    src: url('/web-verification-host/fonts/FontAwesome5_Regular.ttf') format('truetype');
   }
   @font-face {
     font-family: 'FontAwesome5Brands-Regular';
-    src: url('https://cdn.jsdelivr.net/npm/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf') format('truetype');
+    src: url('/web-verification-host/fonts/FontAwesome5_Brands.ttf') format('truetype');
   }
   input:-webkit-autofill,
   input:-webkit-autofill:hover, 

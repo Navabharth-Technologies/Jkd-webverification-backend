@@ -107,7 +107,7 @@ exports.getAllVendors = async (req, res) => {
                 COUNT(*) OVER() as TotalCount
             FROM [onboarding].Vendors V
             LEFT JOIN (
-                SELECT VendorId, Status, UpdatedAt,
+                SELECT VendorId, Status, Remark, UpdatedAt,
                     ROW_NUMBER() OVER (PARTITION BY VendorId ORDER BY UpdatedAt DESC) as rn
                 FROM [onboarding].VendorStatusTracking
             ) VST ON V.VendorId = VST.VendorId AND VST.rn = 1

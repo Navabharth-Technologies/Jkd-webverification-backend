@@ -173,8 +173,7 @@ exports.approveUser = async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Staff Approved Successfully. Credentials sent via Email.',
-            password: rawPassword // Returning for frontend display as fallback
+            message: 'Staff Approved Successfully. Credentials sent via Email.'
         });
     } catch (err) {
         console.error('Error approving user:', err);

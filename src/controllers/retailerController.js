@@ -368,6 +368,36 @@ exports.updateStatus = async (req, res) => {
 
         await transaction.commit();
 
+        // 3. Send Email if status is Approved
+        if (status === 'Approved') {
+            try {
+                const requestDetails = new sql.Request();
+                requestDetails.input('retailerId', sql.VarChar, id);
+                const detailsRes = await requestDetails.query('SELECT RetailerName, EmailAddress, WhatsAppNumber FROM [onboarding].Retailers WHERE RetailerId = @retailerId');
+                
+                if (detailsRes.recordset.length > 0) {
+                    const retailer = detailsRes.recordset[0];
+                    const emailService = require('../services/emailService');
+                    console.log(`[EMAIL-DEBUG] Starting email process for Retailer ${retailer.EmailAddress} (${retailer.RetailerName})`);
+                    
+                    try {
+                        const emailSent = await emailService.sendRetailerApprovalEmail(retailer.EmailAddress, retailer.RetailerName, retailer.WhatsAppNumber);
+                        if (emailSent) {
+                            console.log(`[EMAIL-SUCCESS] Retailer email sent successfully to ${retailer.EmailAddress}`);
+                        } else {
+                            console.warn(`[EMAIL-FAILURE] emailService.sendRetailerApprovalEmail returned false for ${retailer.EmailAddress}`);
+                        }
+                    } catch (emailErr) {
+                        console.error(`[EMAIL-ERROR] Exception caught during Retailer email sending to ${retailer.EmailAddress}:`, emailErr.message);
+                    }
+                } else {
+                    console.warn(`[EMAIL-WARNING] Could not find retailer details for email notification (RetailerId: ${id})`);
+                }
+            } catch (errDetails) {
+                console.error('[EMAIL-ERROR] Error fetching retailer details for email:', errDetails);
+            }
+        }
+
         res.json({ success: true, message: 'Status updated successfully' });
 
     } catch (err) {
